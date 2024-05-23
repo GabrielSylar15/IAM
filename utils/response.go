@@ -17,6 +17,8 @@ func BuildResponse(status bool, message string, data interface{}, rid string) Re
 
 func BuildSuccessResponse(data interface{}) Response {
 	return Response{
-		Data: data,
+		Data:    data,
+		Status:  true,
+		Message: "success",
 	}
 }
