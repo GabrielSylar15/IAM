@@ -3,11 +3,13 @@ package config
 import (
 	"database/sql"
 	"fmt"
+	_ "github.com/go-sql-driver/mysql"
 	"log"
 	"os"
 )
 
 // https://medium.com/propertyfinder-engineering/go-and-mysql-setting-up-connection-pooling-4b778ef8e560
+// đây là biến quản lý connection pool, không phải là một connection
 var DB *sql.DB
 
 type DatabaseConfig struct {
@@ -19,7 +21,8 @@ type DatabaseConfig struct {
 }
 
 func ConfigDatabase(config DatabaseConfig) (*sql.DB, error) {
-	dsn := fmt.Sprintln("%s:%s@tcp(%s:%d)/%s&readTimeout=30s&writeTimeout=30s",
+
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s",
 		config.Username, config.Password, config.Host, config.Port, config.Database)
 	db, error := sql.Open("mysql", dsn)
 	if error != nil {
@@ -30,7 +33,7 @@ func ConfigDatabase(config DatabaseConfig) (*sql.DB, error) {
 	return db, nil
 }
 
-func init() {
+func InitConnection() {
 	config := DatabaseConfig{
 		Username: os.Getenv("DATABASE_MYSQL_USERNAME"),
 		Password: os.Getenv("DATABASE_MYSQL_PASSWORD"),
