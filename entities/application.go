@@ -4,7 +4,7 @@ import (
 	"time"
 )
 
-type Service struct {
+type Application struct {
 	ID           uint64    `gorm:"column:id;primaryKey;autoIncrement;comment:'id service_scope'"`
 	ClientID     string    `gorm:"column:client_id;type:varchar(255);not null;comment:'id client service'"`
 	ClientSecret string    `gorm:"column:client_secret;type:varchar(255);not null"`

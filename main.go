@@ -12,6 +12,7 @@ import (
 
 func main() {
 	config.InitConnection()
+	config.InitInjector()
 	defer config.DB.Close() // close when application was closed
 	gin.SetMode("debug")
 

@@ -16,6 +16,7 @@ func InitRouter() *gin.Engine {
 	{
 		apiv1.GET("/hello", api.Hello)
 		apiv1.POST("/token", api.GetToken)
+		apiv1.POST("/application", AddApplication)
 	}
 	return r
 }

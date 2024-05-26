@@ -1,0 +1,47 @@
+create table scope
+(
+    id           bigint auto_increment comment 'id scope'
+        primary key,
+    scp          varchar(255)                       not null comment 'Scope',
+    owner_client varchar(100)                       not null comment 'Client tạo scope',
+    created_by   bigint                             not null comment 'id người tạo',
+    created_at   datetime default CURRENT_TIMESTAMP null,
+    updated_at   datetime default CURRENT_TIMESTAMP null on update CURRENT_TIMESTAMP,
+    constraint scp
+        unique (scp)
+);
+
+create table service
+(
+    id            bigint auto_increment comment 'id service'
+        primary key,
+    client_id     varchar(255)                       not null comment 'id client service',
+    client_secret varchar(255)                       not null comment 'password client',
+    service_name  varchar(100)                       not null comment 'tên của service',
+    public_key    varchar(2000)                      not null comment 'public key của service để verify token',
+    private_key   varchar(2000)                      not null comment 'private key của service để generate token',
+    created_by    bigint                             not null comment 'id người tạo',
+    created_at    datetime default CURRENT_TIMESTAMP null,
+    updated_at    datetime default CURRENT_TIMESTAMP null on update CURRENT_TIMESTAMP,
+    kid           varchar(255)                       not null comment 'key id',
+    constraint client_id
+        unique (client_id),
+    constraint kid
+        unique (kid)
+);
+
+create table service_scope
+(
+    id         bigint auto_increment comment 'id service_scope'
+        primary key,
+    service_id bigint                             not null comment 'id của service',
+    scope_id   bigint                             not null comment 'id của scope',
+    client_id  varchar(255)                       not null comment 'id client service',
+    created_by bigint                             not null comment 'id của người thêm scope',
+    created_at datetime default CURRENT_TIMESTAMP null,
+    updated_at datetime default CURRENT_TIMESTAMP null on update CURRENT_TIMESTAMP
+);
+
+create index client_scope_INX
+    on service_scope (client_id, scope_id);
+
