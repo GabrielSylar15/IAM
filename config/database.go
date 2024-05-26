@@ -1,16 +1,16 @@
 package config
 
 import (
-	"database/sql"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/jinzhu/gorm"
 	"log"
 	"os"
 )
 
 // https://medium.com/propertyfinder-engineering/go-and-mysql-setting-up-connection-pooling-4b778ef8e560
 // đây là biến quản lý connection pool, không phải là một connection
-var DB *sql.DB
+var DB *gorm.DB
 
 type DatabaseConfig struct {
 	Host     string
@@ -20,16 +20,17 @@ type DatabaseConfig struct {
 	Password string
 }
 
-func ConfigDatabase(config DatabaseConfig) (*sql.DB, error) {
+func ConfigDatabase(config DatabaseConfig) (*gorm.DB, error) {
 
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s",
 		config.Username, config.Password, config.Host, config.Port, config.Database)
-	db, error := sql.Open("mysql", dsn)
+	db, error := gorm.Open("mysql", dsn)
 	if error != nil {
 		return nil, error
 	}
-	db.SetMaxOpenConns(30)
-	db.SetMaxIdleConns(30)
+	sqlDb := db.DB()
+	sqlDb.SetMaxOpenConns(30)
+	sqlDb.SetMaxIdleConns(30)
 	return db, nil
 }
 
