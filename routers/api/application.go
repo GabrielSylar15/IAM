@@ -15,11 +15,11 @@ type applicationController struct {
 	applicationService service.ApplicationService
 }
 
-func NewApplicationController(applicationService service.ApplicationService) *ApplicationController {
+func NewApplicationController(applicationService service.ApplicationService) ApplicationController {
 	return &applicationController{applicationService}
 }
 
-func (c *ApplicationController) AddApplication(ctx *gin.Context) {
+func (c *applicationController) AddApplication(ctx *gin.Context) {
 	var request entities.Application
 	if err := ctx.BindJSON(&request); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
