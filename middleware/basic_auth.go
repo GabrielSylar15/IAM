@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"IAM/utils"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -13,6 +14,7 @@ func BasicAuth() gin.HandlerFunc {
 		} else {
 			c.Header("WWW-Authenticate", `Basic realm="Restricted"`)
 			c.AbortWithStatus(http.StatusUnauthorized)
+			c.JSON(http.StatusUnauthorized, utils.BuildErrorResponse("Unauthentication, please try again!"))
 		}
 	}
 }

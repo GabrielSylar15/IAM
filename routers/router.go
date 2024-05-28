@@ -3,7 +3,9 @@ package routers
 import (
 	"IAM/middleware"
 	"IAM/routers/api"
+	"IAM/utils"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 func InitRouter(controller api.ApplicationController) *gin.Engine {
@@ -16,7 +18,11 @@ func InitRouter(controller api.ApplicationController) *gin.Engine {
 	{
 		apiv1.GET("/hello", api.Hello)
 		apiv1.POST("/token", api.GetToken)
-		apiv1.POST("/add", controller.AddApplication)
+		apiv1.POST("/application", controller.AddApplication)
 	}
+
+	r.NoRoute(func(c *gin.Context) {
+		c.JSON(http.StatusNotFound, utils.BuildErrorResponse("Invalid resouce!"))
+	})
 	return r
 }

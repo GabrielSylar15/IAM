@@ -22,3 +22,19 @@ func BuildSuccessResponse(data interface{}) Response {
 		Message: "success",
 	}
 }
+
+func BuildErrorResponse(message string) Response {
+	return Response{
+		Data:    message,
+		Status:  false,
+		Message: "fail",
+	}
+}
+
+func BuildInternalErrorResponse() Response {
+	return Response{
+		Data:    "Internal Error",
+		Status:  false,
+		Message: "fail",
+	}
+}

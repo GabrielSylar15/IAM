@@ -13,7 +13,7 @@ type applicationRepository struct {
 	db *gorm.DB
 }
 
-func NewApplicationRepository(db *gorm.DB) ApplicationRepository {
+func InitApplicationRepository(db *gorm.DB) ApplicationRepository {
 	return &applicationRepository{db}
 }
 

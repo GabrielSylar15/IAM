@@ -3,7 +3,6 @@ package main
 import (
 	"IAM/config"
 	"IAM/routers"
-	"IAM/wire"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"log"
@@ -14,8 +13,8 @@ import (
 func main() {
 	config.InitConnection()
 	defer config.DB.Close() // close when application was closed
+	applicationController := config.InitializeInjector()
 	gin.SetMode("debug")
-	applicationController := wire.InitializeApplicationController(config.DB)
 	routersInit := routers.InitRouter(applicationController)
 	readTimeout := time.Duration(600) * time.Second
 	writeTimeout := time.Duration(600) * time.Second
