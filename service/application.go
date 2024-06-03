@@ -20,7 +20,8 @@ type ApplicationResponseStruct struct {
 }
 
 type ApplicationService interface {
-	CreateService(form entities.Application) (ApplicationResponseStruct, error)
+	CreateApplication(form entities.Application) ApplicationResponseStruct
+	GetApplication(id int64) ApplicationResponseStruct
 }
 
 type applicationService struct {
@@ -31,20 +32,26 @@ func InitApplicationService(repository repository.ApplicationRepository) Applica
 	return &applicationService{repository}
 }
 
-func (s *applicationService) CreateService(request entities.Application) (ApplicationResponseStruct, error) {
-	entity := BuildApplicationEntity()
+func (s *applicationService) CreateApplication(request entities.Application) ApplicationResponseStruct {
+	entity := BuildApplicationEntity(request)
 	entity.ServiceName = request.ServiceName
+	entity.CreatedBy = request.CreatedBy
+	_, err := s.repository.CreateApplication(entity)
+	if err != nil {
+		panic(err)
+	}
+
 	return ApplicationResponseStruct{
 		ServiceName:  entity.ServiceName,
 		KeyId:        entity.KeyID,
 		ClientId:     entity.ClientID,
 		ClientSecret: entity.ClientSecret,
-		CreatedAt:    time.Time{},
-		UpdatedAt:    time.Time{},
-	}, nil
+		CreatedAt:    entity.CreatedAt,
+		UpdatedAt:    entity.UpdatedAt,
+	}
 }
 
-func BuildApplicationEntity() *entities.Application {
+func BuildApplicationEntity(request entities.Application) *entities.Application {
 	clientId := strings.ReplaceAll(strings.ToUpper(uuid.New().String()), "-", "")
 	clientSecret := strings.ReplaceAll(uuid.New().String(), "-", "")
 	keyId := clientId + "_" + strconv.FormatInt(time.Now().Unix(), 10)
@@ -56,10 +63,24 @@ func BuildApplicationEntity() *entities.Application {
 	return &entities.Application{
 		ClientID:     clientId,
 		ClientSecret: clientSecret,
-		ServiceName:  "",
+		ServiceName:  request.ServiceName,
 		PublicKey:    publicKeyStr,
 		PrivateKey:   privateKeyStr,
-		CreatedBy:    0,
 		KeyID:        keyId,
+	}
+}
+
+func (s *applicationService) GetApplication(id int64) ApplicationResponseStruct {
+	entity, err := s.repository.GetApplication(id)
+	if err != nil {
+		panic(err)
+	}
+	return ApplicationResponseStruct{
+		ServiceName:  entity.ServiceName,
+		KeyId:        entity.KeyID,
+		ClientId:     entity.ClientID,
+		ClientSecret: entity.ClientSecret,
+		CreatedAt:    entity.CreatedAt,
+		UpdatedAt:    entity.UpdatedAt,
 	}
 }

@@ -22,7 +22,7 @@ type DatabaseConfig struct {
 
 func ConfigDatabase(config DatabaseConfig) (*gorm.DB, error) {
 
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s",
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=true",
 		config.Username, config.Password, config.Host, config.Port, config.Database)
 	db, error := gorm.Open("mysql", dsn)
 	if error != nil {

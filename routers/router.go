@@ -14,13 +14,14 @@ func InitRouter(controller api.ApplicationController) *gin.Engine {
 	r.Use(gin.Logger())
 
 	apiv1 := r.Group("/api/v1")
-	apiv1.Use(middleware.BasicAuth())
+	apiv1.Use(middleware.BasicAuth(),
+		middleware.HandleException())
 	{
 		apiv1.GET("/hello", api.Hello)
 		apiv1.POST("/token", api.GetToken)
 		apiv1.POST("/application", controller.AddApplication)
+		apiv1.GET("/application/:id", controller.GetApplication)
 	}
-
 	r.NoRoute(func(c *gin.Context) {
 		c.JSON(http.StatusNotFound, utils.BuildErrorResponse("Invalid resouce!"))
 	})

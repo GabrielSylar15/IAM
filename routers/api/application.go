@@ -6,10 +6,12 @@ import (
 	"IAM/utils"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
 )
 
 type ApplicationController interface {
 	AddApplication(c *gin.Context)
+	GetApplication(c *gin.Context)
 }
 
 type applicationController struct {
@@ -27,10 +29,17 @@ func (c *applicationController) AddApplication(ctx *gin.Context) {
 		return
 	}
 
-	result, err := c.applicationService.CreateService(request)
+	result := c.applicationService.CreateApplication(request)
+	ctx.JSON(http.StatusCreated, result)
+}
+
+func (c *applicationController) GetApplication(ctx *gin.Context) {
+	idStr := ctx.Param("id")
+	id, err := strconv.ParseInt(idStr, 10, 64)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, utils.BuildInternalErrorResponse())
+		ctx.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
-	ctx.JSON(http.StatusCreated, result)
+	entity := c.applicationService.GetApplication(id)
+	ctx.JSON(http.StatusOK, entity)
 }
