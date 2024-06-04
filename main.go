@@ -13,9 +13,9 @@ import (
 func main() {
 	config.InitConnection()
 	defer config.DB.Close() // close when application was closed
-	applicationController := config.InitializeInjector()
+	applicationController, scopeController := config.InitializeInjector()
 	gin.SetMode("debug")
-	routersInit := routers.InitRouter(applicationController)
+	routersInit := routers.InitRouter(applicationController, scopeController)
 	readTimeout := time.Duration(600) * time.Second
 	writeTimeout := time.Duration(600) * time.Second
 	endPoint := fmt.Sprintf(":%d", 8080)

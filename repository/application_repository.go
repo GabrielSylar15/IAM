@@ -16,6 +16,7 @@ type applicationRepository struct {
 }
 
 // nó giống một constructor
+// ApplicationRepository = &applicationRepository
 // define trả về interface nhưng return địa chỉ của struct => interface trỏ tới địa chỉ của class
 func InitApplicationRepository(db *gorm.DB) ApplicationRepository {
 	return &applicationRepository{db}

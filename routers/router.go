@@ -8,7 +8,8 @@ import (
 	"net/http"
 )
 
-func InitRouter(controller api.ApplicationController) *gin.Engine {
+func InitRouter(applicationController api.ApplicationController,
+	scopeController api.ScopeController) *gin.Engine {
 	r := gin.New()
 	r.Use(gin.Recovery())
 	r.Use(gin.Logger())
@@ -19,8 +20,8 @@ func InitRouter(controller api.ApplicationController) *gin.Engine {
 	{
 		apiv1.GET("/hello", api.Hello)
 		apiv1.POST("/token", api.GetToken)
-		apiv1.POST("/application", controller.AddApplication)
-		apiv1.GET("/application/:id", controller.GetApplication)
+		apiv1.POST("/application", applicationController.AddApplication)
+		apiv1.GET("/application/:id", applicationController.GetApplication)
 	}
 	r.NoRoute(func(c *gin.Context) {
 		c.JSON(http.StatusNotFound, utils.BuildErrorResponse("Invalid resouce!"))
