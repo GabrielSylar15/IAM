@@ -18,7 +18,7 @@ func InitializeInjector() (api.ApplicationController, api.ScopeController) {
 
 	scopeRepository := repository.InitScopeRepository(DB)
 	scopeService := service.InitScopeService(scopeRepository)
-	scopeController := api.InitScopeController(&scopeService)
+	scopeController := api.InitScopeController(scopeService)
 
 	return applicationController, scopeController
 }

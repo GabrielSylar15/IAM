@@ -3,19 +3,9 @@ package middleware
 import (
 	"IAM/utils"
 	"github.com/gin-gonic/gin"
-	"log"
-	"net/http"
 )
 
-func HandleException() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		c.Next()
-
-		for _, err := range c.Errors {
-			// log, handle, etc.
-			log.Println(err)
-		}
-
-		c.JSON(http.StatusNotFound, utils.BuildErrorResponse("An errors has been occurs!"))
-	}
+func ErrorHandler(c *gin.Context, err any) {
+	httpResponse := utils.BuildErrorResponse("Intenal server error")
+	c.AbortWithStatusJSON(500, httpResponse)
 }

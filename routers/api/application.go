@@ -41,5 +41,5 @@ func (c *applicationController) GetApplication(ctx *gin.Context) {
 		return
 	}
 	entity := c.applicationService.GetApplication(id)
-	ctx.JSON(http.StatusOK, entity)
+	ctx.JSON(http.StatusOK, utils.BuildSuccessResponse(entity))
 }

@@ -14,6 +14,7 @@ type scopeController struct {
 
 type ScopeController interface {
 	CreateScope(c *gin.Context)
+	GetScope(c *gin.Context)
 }
 
 func InitScopeController(scopeService service.ScopeService) ScopeController {
@@ -28,7 +29,15 @@ func (c *scopeController) CreateScope(ctx *gin.Context) {
 	}
 	entity, err := c.scopeService.CreateScope(&request)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, utils.BuildInternalErrorResponse())
+		panic("Error creating scope")
 	}
 	ctx.JSON(http.StatusOK, utils.BuildSuccessResponse(entity))
+}
+
+func (c *scopeController) GetScope(ctx *gin.Context) {
+	result, err := c.scopeService.GetScope(ctx.Param("client_id"))
+	if err != nil {
+		panic(err.Error())
+	}
+	ctx.JSON(http.StatusOK, utils.BuildSuccessResponse(result))
 }
