@@ -8,6 +8,7 @@ import (
 type ApplicationRepository interface {
 	CreateApplication(application *entities.Application) (entities.Application, error)
 	GetApplication(id int64) (entities.Application, error)
+	GetApplicationByClientID(clientId string) (entities.Application, error)
 }
 
 // định nghĩa class impl interface
@@ -32,5 +33,11 @@ func (r *applicationRepository) CreateApplication(application *entities.Applicat
 func (r *applicationRepository) GetApplication(id int64) (entities.Application, error) {
 	var entity entities.Application
 	result := r.db.Where("id = ?", id).First(&entity)
+	return entity, result.Error
+}
+
+func (r *applicationRepository) GetApplicationByClientID(clientId string) (entities.Application, error) {
+	var entity entities.Application
+	result := r.db.Where("client_id = ?", clientId).First(&entity)
 	return entity, result.Error
 }

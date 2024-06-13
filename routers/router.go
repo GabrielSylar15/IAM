@@ -9,7 +9,8 @@ import (
 )
 
 func InitRouter(applicationController api.ApplicationController,
-	scopeController api.ScopeController) *gin.Engine {
+	scopeController api.ScopeController,
+	applicationScopeController api.ApplicationScopeController) *gin.Engine {
 	r := gin.New()
 	r.Use(gin.Logger())
 
@@ -23,6 +24,7 @@ func InitRouter(applicationController api.ApplicationController,
 		apiv1.GET("/application/:id", applicationController.GetApplication)
 		apiv1.POST("/scope", scopeController.CreateScope)
 		apiv1.GET("/scope/:client_id", scopeController.GetScope)
+		apiv1.POST("/application/scope", applicationScopeController.AssignScope)
 	}
 	r.NoRoute(func(c *gin.Context) {
 		c.JSON(http.StatusNotFound, utils.BuildErrorResponse("Invalid resouce!"))

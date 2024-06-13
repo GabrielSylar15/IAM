@@ -6,19 +6,19 @@ import (
 	"IAM/service"
 )
 
-var applicationRepository repository.ApplicationRepository
-var applicationService service.ApplicationService
-var applicationController api.ApplicationController
-
-func InitializeInjector() (api.ApplicationController, api.ScopeController) {
+func InitializeInjector() (api.ApplicationController, api.ScopeController, api.ApplicationScopeController) {
 	// ApplicationController
-	applicationRepository = repository.InitApplicationRepository(DB)
-	applicationService = service.InitApplicationService(applicationRepository)
-	applicationController = api.InitApplicationController(applicationService)
+	applicationRepository := repository.InitApplicationRepository(DB)
+	applicationService := service.InitApplicationService(applicationRepository)
+	applicationController := api.InitApplicationController(applicationService)
+
+	applicationScopeRepository := repository.InitApplicationScopeRepository(DB)
+	applicationScopeService := service.InitializeApplicationScopeService(applicationScopeRepository)
+	applicationScopeController := api.InitializeApplicationScopeController(applicationScopeService)
 
 	scopeRepository := repository.InitScopeRepository(DB)
-	scopeService := service.InitScopeService(scopeRepository)
+	scopeService := service.InitScopeService(scopeRepository, applicationScopeRepository, applicationRepository)
 	scopeController := api.InitScopeController(scopeService)
 
-	return applicationController, scopeController
+	return applicationController, scopeController, applicationScopeController
 }
