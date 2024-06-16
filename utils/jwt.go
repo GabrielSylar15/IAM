@@ -97,3 +97,15 @@ func ConvertToJWK(pubKey *ecdsa.PublicKey, kid string, alg string) (jwk.Key, err
 	jwkKey.Set(jwk.KeyUsageKey, "sig")
 	return jwkKey, nil
 }
+
+func GenerateTokenByPrivateKey(claim *Claims, duration time.Duration, privateKey string) (string, error) {
+	now := time.Now()
+	expire := now.Add(duration)
+	claim.StandardClaims = jwt.StandardClaims{
+		ExpiresAt: expire.Unix(),
+		Issuer:    "iam",
+	}
+	tokenClaims := jwt.NewWithClaims(jwt.SigningMethodES256, claim)
+	token, err := tokenClaims.SignedString(privateKey)
+	return token, err
+}

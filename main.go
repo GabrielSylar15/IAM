@@ -16,11 +16,15 @@ func main() {
 
 	applicationController,
 		scopeController,
-		applicationScopeController := config.InitializeInjector()
+		applicationScopeController,
+		authenticationController := config.InitializeInjector()
 
 	gin.SetMode("debug")
 
-	routersInit := routers.InitRouter(applicationController, scopeController, applicationScopeController)
+	routersInit := routers.InitRouter(applicationController,
+		scopeController,
+		applicationScopeController,
+		authenticationController)
 	readTimeout := time.Duration(600) * time.Second
 	writeTimeout := time.Duration(600) * time.Second
 	endPoint := fmt.Sprintf(":%d", 8080)

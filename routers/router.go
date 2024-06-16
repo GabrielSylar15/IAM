@@ -10,22 +10,38 @@ import (
 
 func InitRouter(applicationController api.ApplicationController,
 	scopeController api.ScopeController,
-	applicationScopeController api.ApplicationScopeController) *gin.Engine {
+	applicationScopeController api.ApplicationScopeController,
+	authenticationController api.AuthenticationController) *gin.Engine {
 	r := gin.New()
 	r.Use(gin.Logger())
-
 	apiv1 := r.Group("/api/v1")
-	apiv1.Use(middleware.BasicAuth(),
-		gin.CustomRecovery(middleware.ErrorHandler))
 	{
-		apiv1.GET("/hello", api.Hello)
-		apiv1.POST("/token", api.GetToken)
-		apiv1.POST("/application", applicationController.AddApplication)
-		apiv1.GET("/application/:id", applicationController.GetApplication)
-		apiv1.POST("/scope", scopeController.CreateScope)
-		apiv1.GET("/scope/:client_id", scopeController.GetScope)
-		apiv1.POST("/application/scope", applicationScopeController.AssignScope)
+		apiv1.Use(middleware.BasicAuth(), gin.CustomRecovery(middleware.ErrorHandler))
+
+		authGroup := apiv1.Group("/auth")
+		{
+			authGroup.POST("/clients/token", authenticationController.GetToken)
+		}
+
+		applicationGroup := apiv1.Group("/application")
+		{
+			applicationGroup.POST("/", applicationController.AddApplication)
+			applicationGroup.GET("/:id", applicationController.GetApplication)
+		}
+
+		scopeGroup := apiv1.Group("/scope")
+		{
+			scopeGroup.POST("/", scopeController.CreateScope)
+			scopeGroup.GET("/:client_id", scopeController.GetScope)
+		}
+
+		applicationScopeGroup := apiv1.Group("/appication/scope")
+		{
+			applicationScopeGroup.POST("/", applicationScopeController.AssignScope)
+		}
+
 	}
+
 	r.NoRoute(func(c *gin.Context) {
 		c.JSON(http.StatusNotFound, utils.BuildErrorResponse("Invalid resouce!"))
 	})

@@ -22,6 +22,7 @@ func InitApplicationController(applicationService service.ApplicationService) Ap
 	return &applicationController{applicationService}
 }
 
+// TODO: encrypt and decrypt with salt private key
 func (c *applicationController) AddApplication(ctx *gin.Context) {
 	var request entities.Application
 	if err := ctx.BindJSON(&request); err != nil {

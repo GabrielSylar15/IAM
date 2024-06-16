@@ -6,7 +6,10 @@ import (
 	"IAM/service"
 )
 
-func InitializeInjector() (api.ApplicationController, api.ScopeController, api.ApplicationScopeController) {
+func InitializeInjector() (api.ApplicationController,
+	api.ScopeController,
+	api.ApplicationScopeController,
+	api.AuthenticationController) {
 	// ApplicationController
 	applicationRepository := repository.InitApplicationRepository(DB)
 	applicationService := service.InitApplicationService(applicationRepository)
@@ -20,5 +23,11 @@ func InitializeInjector() (api.ApplicationController, api.ScopeController, api.A
 	scopeService := service.InitScopeService(scopeRepository, applicationScopeRepository, applicationRepository)
 	scopeController := api.InitScopeController(scopeService)
 
-	return applicationController, scopeController, applicationScopeController
+	authenticationService := service.InitAuthenticationService(applicationRepository, scopeRepository, applicationScopeRepository)
+	authencationController := api.InitAuthenticationController(authenticationService)
+
+	return applicationController,
+		scopeController,
+		applicationScopeController,
+		authencationController
 }
