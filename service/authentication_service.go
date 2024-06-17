@@ -39,7 +39,7 @@ func (s *authenticationService) GetToken(request dto.TokenRequest) (string, erro
 		return s.Scp
 	})
 
-	var scps []string
+	scps := make([]string, 0)
 	for _, item := range request.Scopes {
 		if utils.Contains(allScps, item) {
 			scps = append(scps, item)
@@ -53,5 +53,5 @@ func (s *authenticationService) GetToken(request dto.TokenRequest) (string, erro
 		StandardClaims: jwt.StandardClaims{},
 	}
 	duration, _ := strconv.ParseInt(os.Getenv("DURATION_VALID_TOKEN"), 10, 64)
-	return utils.GenerateTokenByPrivateKey(&claims, time.Duration(duration)*time.Hour, privateKey)
+	return utils.GenerateToken(&claims, time.Duration(duration)*time.Hour, privateKey)
 }

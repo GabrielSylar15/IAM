@@ -18,38 +18,27 @@ type Claims struct {
 	jwt.StandardClaims
 }
 
-var privateKey *ecdsa.PrivateKey
-
-func loadPrivateKey(jwtScret string) error {
+func loadPrivateKey(jwtScret string) *ecdsa.PrivateKey {
 	// Load private key from file
-	privateKeyBytes, err := os.ReadFile("E:\\Golang\\private_key.pem")
-	privateKeyBytes = []byte(jwtScret)
-
-	if err != nil {
-		return err
-	}
+	privateKeyBytes := []byte(jwtScret)
 
 	// Parse PEM block
 	block, _ := pem.Decode(privateKeyBytes)
 	if block == nil {
-		return fmt.Errorf("Error decoding PEM block")
+		panic("failed to parse PEM block")
 	}
 
 	// Parse ECDSA private key
-	privateKey, err = x509.ParseECPrivateKey(block.Bytes)
+	privateKey, err := x509.ParseECPrivateKey(block.Bytes)
 	if err != nil {
-		return err
+		panic(err)
 	}
 
-	return nil
+	return privateKey
 }
 
-func GenerateToke(claim *Claims, duration time.Duration, jwtScret string) (string, error) {
-	if privateKey == nil {
-		if err := loadPrivateKey(jwtScret); err != nil {
-			return "", err
-		}
-	}
+func GenerateToken(claim *Claims, duration time.Duration, jwtScret string) (string, error) {
+	privateKey := loadPrivateKey(jwtScret)
 
 	now := time.Now()
 	expire := now.Add(duration)
@@ -96,16 +85,4 @@ func ConvertToJWK(pubKey *ecdsa.PublicKey, kid string, alg string) (jwk.Key, err
 	jwkKey.Set(jwk.AlgorithmKey, alg)
 	jwkKey.Set(jwk.KeyUsageKey, "sig")
 	return jwkKey, nil
-}
-
-func GenerateTokenByPrivateKey(claim *Claims, duration time.Duration, privateKey string) (string, error) {
-	now := time.Now()
-	expire := now.Add(duration)
-	claim.StandardClaims = jwt.StandardClaims{
-		ExpiresAt: expire.Unix(),
-		Issuer:    "iam",
-	}
-	tokenClaims := jwt.NewWithClaims(jwt.SigningMethodES256, claim)
-	token, err := tokenClaims.SignedString(privateKey)
-	return token, err
 }

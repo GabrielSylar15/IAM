@@ -20,6 +20,7 @@ func InitAuthenticationController(authenticationService service.AuthenticationSe
 	return &authenticationController{authenticationService}
 }
 
+// TODO: handle panic error message
 func (auth *authenticationController) GetToken(ctx *gin.Context) {
 	clientId := ctx.GetHeader("Username")
 	var request dto.TokenRequest
@@ -32,7 +33,7 @@ func (auth *authenticationController) GetToken(ctx *gin.Context) {
 	if err != nil {
 		panic(err)
 	}
-	ctx.JSON(http.StatusOK, token)
+	ctx.JSON(http.StatusOK, utils.BuildSuccessResponse(token))
 }
 
 //func GetToken(c *gin.Context) {
