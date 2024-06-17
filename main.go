@@ -3,6 +3,7 @@ package main
 import (
 	"IAM/config"
 	"IAM/routers"
+	"IAM/utils"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"log"
@@ -11,6 +12,7 @@ import (
 )
 
 func main() {
+	utils.UseJSONLogFormat()
 	config.InitConnection()
 	defer config.DB.Close() // close when application was closed
 

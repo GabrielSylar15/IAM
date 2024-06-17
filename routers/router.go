@@ -16,7 +16,7 @@ func InitRouter(applicationController api.ApplicationController,
 	r.Use(gin.Logger())
 	apiv1 := r.Group("/api/v1")
 	{
-		apiv1.Use(middleware.BasicAuth(), gin.CustomRecovery(middleware.ErrorHandler))
+		apiv1.Use(middleware.JSONLogMiddleware(), middleware.BasicAuth(), gin.CustomRecovery(middleware.ErrorHandler))
 
 		authGroup := apiv1.Group("/auth")
 		{
