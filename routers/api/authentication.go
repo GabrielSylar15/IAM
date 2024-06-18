@@ -14,6 +14,7 @@ type authenticationController struct {
 
 type AuthenticationController interface {
 	GetToken(ctx *gin.Context)
+	GetJWK(ctx *gin.Context)
 }
 
 func InitAuthenticationController(authenticationService service.AuthenticationService) *authenticationController {
@@ -29,11 +30,22 @@ func (auth *authenticationController) GetToken(ctx *gin.Context) {
 		return
 	}
 	request.ClientId = clientId
-	token, err := auth.AuthenticationService.GetToken(request)
+	response, err := auth.AuthenticationService.GetToken(request)
 	if err != nil {
 		panic(err)
 	}
-	ctx.JSON(http.StatusOK, utils.BuildSuccessResponse(token))
+
+	ctx.JSON(http.StatusOK, utils.BuildSuccessResponse(response))
+}
+
+func (auth *authenticationController) GetJWK(ctx *gin.Context) {
+	clientId := ctx.GetHeader("Username")
+	response, err := auth.AuthenticationService.GetJWK(clientId)
+	if err != nil {
+		panic(err)
+	}
+
+	ctx.JSON(http.StatusOK, utils.BuildSuccessResponse(response))
 }
 
 //func GetToken(c *gin.Context) {

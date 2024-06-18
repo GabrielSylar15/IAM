@@ -6,4 +6,8 @@ type TokenRequest struct {
 }
 
 type TokenResponse struct {
+	TokenType   string   `json:"token_type"`
+	AccessToken string   `json:"access_token"`
+	Scopes      []string `json:"scope"`
+	ExpiresIn   int64    `json:"expires_in"`
 }

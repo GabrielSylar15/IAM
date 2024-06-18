@@ -1,15 +1,16 @@
 package utils
 
 type Response struct {
-	Status  bool        `json:"status"`
+	Success bool        `json:"success"`
 	Message string      `json:"message"`
 	Data    interface{} `json:"data"`
 	Rid     string      `json:"rid"`
+	Code    int         `json:"code"`
 }
 
 func BuildResponse(status bool, message string, data interface{}, rid string) Response {
 	return Response{
-		Status:  status,
+		Success: status,
 		Message: message,
 		Data:    data,
 	}
@@ -18,23 +19,26 @@ func BuildResponse(status bool, message string, data interface{}, rid string) Re
 func BuildSuccessResponse(data interface{}) Response {
 	return Response{
 		Data:    data,
-		Status:  true,
+		Success: true,
 		Message: "success",
+		Code:    200,
 	}
 }
 
 func BuildErrorResponse(message string) Response {
 	return Response{
 		Data:    message,
-		Status:  false,
+		Success: false,
 		Message: "fail",
+		Code:    500,
 	}
 }
 
 func BuildInternalErrorResponse() Response {
 	return Response{
 		Data:    "Internal Error",
-		Status:  false,
+		Success: false,
 		Message: "fail",
+		Code:    500,
 	}
 }

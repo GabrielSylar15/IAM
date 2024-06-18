@@ -6,6 +6,8 @@ import (
 	"IAM/repository"
 	"IAM/utils"
 	"github.com/dgrijalva/jwt-go"
+	"github.com/lestrrat-go/jwx/jwk"
+	log "github.com/sirupsen/logrus"
 	"os"
 	"strconv"
 	"time"
@@ -18,7 +20,8 @@ type authenticationService struct {
 }
 
 type AuthenticationService interface {
-	GetToken(request dto.TokenRequest) (string, error)
+	GetToken(request dto.TokenRequest) (dto.TokenResponse, error)
+	GetJWK(clientId string) (jwk.Key, error)
 }
 
 func InitAuthenticationService(applicationRepository repository.ApplicationRepository,
@@ -31,7 +34,7 @@ func InitAuthenticationService(applicationRepository repository.ApplicationRepos
 	}
 }
 
-func (s *authenticationService) GetToken(request dto.TokenRequest) (string, error) {
+func (s *authenticationService) GetToken(request dto.TokenRequest) (dto.TokenResponse, error) {
 	application, _ := s.ApplicationRepository.GetApplicationByClientID(request.ClientId)
 	privateKey := application.PrivateKey
 	applicationScope, _ := s.ScopeRepository.GetScope(request.ClientId)
@@ -52,6 +55,20 @@ func (s *authenticationService) GetToken(request dto.TokenRequest) (string, erro
 		Scp:            scps,
 		StandardClaims: jwt.StandardClaims{},
 	}
-	duration, _ := strconv.ParseInt(os.Getenv("DURATION_VALID_TOKEN"), 10, 64)
-	return utils.GenerateToken(&claims, time.Duration(duration)*time.Hour, privateKey)
+	duration, err := strconv.ParseInt(os.Getenv("DURATION_VALID_TOKEN"), 10, 64)
+	token, _ := utils.GenerateToken(&claims, time.Duration(duration)*time.Hour, privateKey)
+	response := dto.TokenResponse{
+		TokenType:   "Bearer",
+		AccessToken: token,
+		Scopes:      scps,
+		ExpiresIn:   duration * 60 * 60,
+	}
+	return response, err
+}
+
+func (s *authenticationService) GetJWK(clientId string) (jwk.Key, error) {
+	log.Info("abcd")
+	application, _ := s.ApplicationRepository.GetApplicationByClientID(clientId)
+	publicKey := application.PublicKey
+	return utils.ConvertToJWK(publicKey, application.KeyID, "ES256")
 }

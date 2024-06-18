@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/lestrrat-go/jwx/jwk"
-	"os"
 	"time"
 )
 
@@ -51,11 +50,8 @@ func GenerateToken(claim *Claims, duration time.Duration, jwtScret string) (stri
 	return token, err
 }
 
-func LoadPublicKey(path string) (*ecdsa.PublicKey, error) {
-	pubKeyPEM, err := os.ReadFile(path)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read public key PEM file: %v", err)
-	}
+func LoadPublicKey(publicKey string) (*ecdsa.PublicKey, error) {
+	pubKeyPEM := []byte(publicKey)
 
 	block, _ := pem.Decode(pubKeyPEM)
 	if block == nil || block.Type != "PUBLIC KEY" {
@@ -75,7 +71,8 @@ func LoadPublicKey(path string) (*ecdsa.PublicKey, error) {
 	return ecPubKey, nil
 }
 
-func ConvertToJWK(pubKey *ecdsa.PublicKey, kid string, alg string) (jwk.Key, error) {
+func ConvertToJWK(publicKey string, kid string, alg string) (jwk.Key, error) {
+	pubKey, _ := LoadPublicKey(publicKey)
 	jwkKey, err := jwk.New(pubKey)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create JWK: %v", err)

@@ -3,12 +3,10 @@ package middleware
 import (
 	"IAM/utils"
 	"github.com/gin-gonic/gin"
-	log "github.com/sirupsen/logrus"
 	"net/http"
 )
 
 func BasicAuth() gin.HandlerFunc {
-	log.Info("Auth Basic")
 	return func(c *gin.Context) {
 		username, password, hasAuth := c.Request.BasicAuth()
 		if hasAuth && username == "FB1C6864741745068FDADF17D7256D14" && password == "c952a6cdc1a64492a9dc570063598a7a" {
