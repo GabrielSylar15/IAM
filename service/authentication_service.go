@@ -3,11 +3,12 @@ package service
 import (
 	"IAM/dto"
 	"IAM/entities"
+	"IAM/log"
 	"IAM/repository"
 	"IAM/utils"
+	"context"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/lestrrat-go/jwx/jwk"
-	log "github.com/sirupsen/logrus"
 	"os"
 	"strconv"
 	"time"
@@ -21,7 +22,7 @@ type authenticationService struct {
 
 type AuthenticationService interface {
 	GetToken(request dto.TokenRequest) (dto.TokenResponse, error)
-	GetJWK(clientId string) (jwk.Key, error)
+	GetJWK(ctx context.Context, clientId string) (jwk.Key, error)
 }
 
 func InitAuthenticationService(applicationRepository repository.ApplicationRepository,
@@ -66,8 +67,9 @@ func (s *authenticationService) GetToken(request dto.TokenRequest) (dto.TokenRes
 	return response, err
 }
 
-func (s *authenticationService) GetJWK(clientId string) (jwk.Key, error) {
-	log.Info("abcd")
+func (s *authenticationService) GetJWK(ctx context.Context, clientId string) (jwk.Key, error) {
+	log.Info(ctx, "Getting JWK")
+
 	application, _ := s.ApplicationRepository.GetApplicationByClientID(clientId)
 	publicKey := application.PublicKey
 	return utils.ConvertToJWK(publicKey, application.KeyID, "ES256")

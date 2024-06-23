@@ -2,6 +2,7 @@ package api
 
 import (
 	"IAM/dto"
+	"IAM/log"
 	"IAM/service"
 	"IAM/utils"
 	"github.com/gin-gonic/gin"
@@ -39,28 +40,12 @@ func (auth *authenticationController) GetToken(ctx *gin.Context) {
 }
 
 func (auth *authenticationController) GetJWK(ctx *gin.Context) {
-	clientId := ctx.GetHeader("Username")
-	response, err := auth.AuthenticationService.GetJWK(clientId)
+	clientId := ctx.GetHeader("X-User-name")
+	log.Info(ctx.Request.Context(), "%s get jwk", clientId)
+	response, err := auth.AuthenticationService.GetJWK(ctx.Request.Context(), clientId)
 	if err != nil {
 		panic(err)
 	}
 
 	ctx.JSON(http.StatusOK, utils.BuildSuccessResponse(response))
 }
-
-//func GetToken(c *gin.Context) {
-//	clientId, _, _ := c.Request.BasicAuth()
-//	claims := utils.Claims{
-//		ClientId:       clientId,
-//		Type:           "direct",
-//		Scp:            []string{"test.read:direct"},
-//		StandardClaims: jwt.StandardClaims{},
-//	}
-//	token, err := utils.GenerateToke(&claims, 3*time.Hour, "-----BEGIN EC PRIVATE KEY-----\nMHcCAQEEIAdDQx8UIEmWymoqfzsizTMaIxMUv6UcBh3k8uFVGGWpoAoGCCqGSM49\nAwEHoUQDQgAEl5ah/KBtLXUwQHrLGJD1kEj3yCViE+3qhDrSevx2cAg4g43sAxF1\npaekJiPxoJunzmU+LG5ULccdhP+zSNi71Q==\n-----END EC PRIVATE KEY-----\n")
-//	if err != nil {
-//		res := utils.BuildSuccessResponse("Token generation failed!")
-//		c.JSON(http.StatusForbidden, res)
-//	}
-//	res := utils.BuildSuccessResponse(token)
-//	c.JSON(http.StatusOK, res)
-//}
